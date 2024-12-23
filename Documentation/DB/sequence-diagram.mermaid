@@ -1,0 +1,43 @@
+sequenceDiagram
+    participant Client as Клиентский код
+    participant Substance as Substance
+    participant IRepo as SubstanceRepository
+    participant SQLite as SQLiteSubstanceRepository
+    participant DB as База данных SQLite
+
+    %% Создание вещества
+    Client->>Substance: создание объекта new Substance()
+    Substance-->>Client: объект вещества
+    
+    %% Создание репозитория
+    Client->>SQLite: создание репозитория new SQLiteRepository()
+    
+    %% Сохранение
+    Client->>SQLite: create(substance)
+    SQLite->>Substance: validate()
+    Substance-->>SQLite: результат валидации
+    SQLite->>DB: INSERT запрос
+    DB-->>SQLite: id нового вещества
+    SQLite-->>Client: id вещества
+
+    %% Получение
+    Client->>SQLite: get(id)
+    SQLite->>DB: SELECT запрос
+    DB-->>SQLite: данные вещества
+    SQLite->>Substance: создание объекта из данных
+    SQLite-->>Client: объект вещества
+
+    %% Обновление
+    Client->>SQLite: update(substance)
+    SQLite->>Substance: validate()
+    Substance-->>SQLite: результат валидации
+    SQLite->>DB: UPDATE запрос
+    DB-->>SQLite: результат обновления
+    SQLite-->>Client: успех/неудача
+
+    %% Поиск
+    Client->>SQLite: search(name="бензин")
+    SQLite->>DB: SELECT с условием
+    DB-->>SQLite: список веществ
+    SQLite->>Substance: создание объектов
+    SQLite-->>Client: список объектов Substance

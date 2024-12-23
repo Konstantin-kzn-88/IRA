@@ -1,0 +1,32 @@
+graph TD
+    subgraph GUI[GUI Layer]
+        MainWindow[MainWindow]
+        ObjectsPanel[Objects Panel]
+        MapView[Map View]
+        CalcDialog[Calculation Dialog]
+    end
+
+    subgraph Core[Core Layer]
+        Calculator[Calculator]
+        ObjectManager[Object Manager]
+        ProjectManager[Project Manager]
+    end
+
+    subgraph Data[Data Layer]
+        Database[(SQLite Database)]
+        FileStorage[File Storage]
+    end
+
+    %% GUI -> Core connections
+    MainWindow --> ProjectManager
+    ObjectsPanel --> ObjectManager
+    MapView --> ObjectManager
+    CalcDialog --> Calculator
+
+    %% Core -> Data connections
+    ProjectManager --> Database
+    ObjectManager --> Database
+    Calculator --> Database
+
+    %% Additional connections
+    FileStorage --> ProjectManager
