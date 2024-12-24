@@ -1,0 +1,45 @@
+sequenceDiagram
+    participant Client as Клиентский код
+    participant Equipment as Equipment
+    participant IRepo as EquipmentRepository
+    participant SQLite as SQLiteEquipmentRepository
+    participant DB as База данных SQLite
+
+    %% Создание оборудования
+    Client->>Equipment: создание объекта new Equipment()
+    Equipment-->>Client: объект оборудования
+    
+    %% Создание репозитория
+    Client->>SQLite: создание репозитория new SQLiteEquipmentRepository()
+    
+    %% Сохранение
+    Client->>SQLite: create(equipment)
+    SQLite->>Equipment: validate()
+    Equipment-->>SQLite: результат валидации
+    SQLite->>DB: INSERT запрос
+    Note right of DB: Выбор нужной таблицы<br/>в зависимости от типа<br/>оборудования
+    DB-->>SQLite: id нового оборудования
+    SQLite-->>Client: id оборудования
+
+    %% Получение
+    Client->>SQLite: get(type, id)
+    SQLite->>DB: SELECT запрос
+    DB-->>SQLite: данные оборудования
+    SQLite->>Equipment: создание объекта из данных
+    SQLite-->>Client: объект оборудования
+
+    %% Обновление
+    Client->>SQLite: update(equipment)
+    SQLite->>Equipment: validate()
+    Equipment-->>SQLite: результат валидации
+    SQLite->>DB: UPDATE запрос
+    DB-->>SQLite: результат обновления
+    SQLite-->>Client: успех/неудача
+
+    %% Поиск по параметрам
+    Client->>SQLite: search(params)
+    Note right of Client: params может включать:<br/>тип оборудования,<br/>название, компонент<br/>предприятия и т.д.
+    SQLite->>DB: SELECT с условиями
+    DB-->>SQLite: список оборудования
+    SQLite->>Equipment: создание объектов
+    SQLite-->>Client: список объектов Equipment
